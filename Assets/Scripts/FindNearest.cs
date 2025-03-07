@@ -1,26 +1,54 @@
-﻿using UnityEngine;
+﻿
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
+using UnityEngine;
 
 public class FindNearest : MonoBehaviour
 {
-    void Update()
+    NativeArray<float3> TargetPositions;
+    NativeArray<float3> SeekerPositions;
+    NativeArray<float3> NearestTargetPositions;
+    private void Start()
     {
-        foreach (var seekerTransform in Spawner.SeekerTransform)
+        Spawner spawner = Object.FindFirstObjectByType<Spawner>();
+        if(spawner != null)
+        {                                                                       // Persistent : 지속되는, 즉 영구 할당자 역할
+            TargetPositions = new NativeArray<float3>(spawner.GetNumTargets(), Allocator.Persistent);
+            SeekerPositions = new NativeArray<float3>(spawner.GetNumTargets(), Allocator.Persistent);
+            NearestTargetPositions = new NativeArray<float3>(spawner.GetNumTargets(), Allocator.Persistent);
+        }
+    }
+    private void OnDestroy()
+    {
+        TargetPositions.Dispose();
+        SeekerPositions.Dispose();
+        NearestTargetPositions.Dispose();
+    }
+    private void Update()
+    {
+        for(int i = 0; i < TargetPositions.Length; ++i)
         {
-            Vector3 seekerPos = seekerTransform.localPosition;
-            Vector3 nearestTargetPos = default;
-            float nearestDistSq = float.MaxValue;
-            foreach (var targetTransform in Spawner.TargetTransform)
-            {
-                Vector3 offset = targetTransform.localPosition - seekerPos;
-                float distSq = offset.sqrMagnitude;
-                if (distSq < nearestDistSq)
-                {
-                    nearestDistSq = distSq;
-                    nearestTargetPos = targetTransform.localPosition;
-                }
-            }
+            TargetPositions[i] = Spawner.TargetTransform[i].localPosition;
+        }
+        for (int i = 0; i < TargetPositions.Length; ++i)
+        {
+            SeekerPositions[i] = Spawner.SeekerTransform[i].localPosition;
+        }
 
-            Debug.DrawLine(seekerPos, nearestTargetPos);
+        FindNearestJob findJob = new FindNearestJob
+        {
+            TargetPosition = TargetPositions,
+            SeekerPosition = SeekerPositions,
+            NearestTargetPositions = NearestTargetPositions
+        };
+
+        JobHandle handle = findJob.Schedule();
+        handle.Complete();
+
+        for(int i = 0; i < NearestTargetPositions.Length; ++i)
+        {
+            Debug.DrawLine(SeekerPositions[i], NearestTargetPositions[i]);
         }
     }
 }

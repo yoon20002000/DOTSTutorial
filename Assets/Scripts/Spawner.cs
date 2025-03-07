@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
@@ -10,8 +11,10 @@ public class Spawner : MonoBehaviour
     private GameObject targetPrefab;
     [SerializeField]
     private int numSeekers;
+    public int GetNumSeekers() => numSeekers;
     [SerializeField]
     private int numTargets;
+    public int GetNumTargets() => numTargets;
     [SerializeField]
     private Vector2 bounds;
     void Start()
