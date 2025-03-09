@@ -3,55 +3,57 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
-
-public class FindNearest : MonoBehaviour
+namespace JobSystemExample
 {
-    NativeArray<float3> TargetPositions;
-    NativeArray<float3> SeekerPositions;
-    NativeArray<float3> NearestTargetPositions;
-    private void Start()
+    public class FindNearest : MonoBehaviour
     {
-        Spawner spawner = Object.FindFirstObjectByType<Spawner>();
-        if(spawner != null)
-        {                                                                       // Persistent : 지속되는, 즉 영구 할당자 역할
-            TargetPositions = new NativeArray<float3>(spawner.GetNumTargets(), Allocator.Persistent);
-            SeekerPositions = new NativeArray<float3>(spawner.GetNumTargets(), Allocator.Persistent);
-            NearestTargetPositions = new NativeArray<float3>(spawner.GetNumTargets(), Allocator.Persistent);
+        NativeArray<float3> TargetPositions;
+        NativeArray<float3> SeekerPositions;
+        NativeArray<float3> NearestTargetPositions;
+        private void Start()
+        {
+            Spawner spawner = Object.FindFirstObjectByType<Spawner>();
+            if (spawner != null)
+            {                                                                       // Persistent : 지속되는, 즉 영구 할당자 역할
+                TargetPositions = new NativeArray<float3>(spawner.GetNumTargets(), Allocator.Persistent);
+                SeekerPositions = new NativeArray<float3>(spawner.GetNumTargets(), Allocator.Persistent);
+                NearestTargetPositions = new NativeArray<float3>(spawner.GetNumTargets(), Allocator.Persistent);
+            }
         }
-    }
-    private void OnDestroy()
-    {
-        TargetPositions.Dispose();
-        SeekerPositions.Dispose();
-        NearestTargetPositions.Dispose();
-    }
-    private void Update()
-    {
-        for(int i = 0; i < TargetPositions.Length; ++i)
+        private void OnDestroy()
         {
-            TargetPositions[i] = Spawner.TargetTransform[i].localPosition;
+            TargetPositions.Dispose();
+            SeekerPositions.Dispose();
+            NearestTargetPositions.Dispose();
         }
-        for (int i = 0; i < TargetPositions.Length; ++i)
+        private void Update()
         {
-            SeekerPositions[i] = Spawner.SeekerTransform[i].localPosition;
-        }
+            for (int i = 0; i < TargetPositions.Length; ++i)
+            {
+                TargetPositions[i] = Spawner.TargetTransform[i].localPosition;
+            }
+            for (int i = 0; i < TargetPositions.Length; ++i)
+            {
+                SeekerPositions[i] = Spawner.SeekerTransform[i].localPosition;
+            }
 
-        SortJob<float3, AxisXComparer> sortJob = TargetPositions.SortJob(new AxisXComparer { });
-        JobHandle sortJobHandle = sortJob.Schedule();
+            SortJob<float3, AxisXComparer> sortJob = TargetPositions.SortJob(new AxisXComparer { });
+            JobHandle sortJobHandle = sortJob.Schedule();
 
-        FindNearestJob findJob = new FindNearestJob
-        {
-            TargetPosition = TargetPositions,
-            SeekerPosition = SeekerPositions,
-            NearestTargetPositions = NearestTargetPositions
-        };
+            FindNearestJob findJob = new FindNearestJob
+            {
+                TargetPosition = TargetPositions,
+                SeekerPosition = SeekerPositions,
+                NearestTargetPositions = NearestTargetPositions
+            };
 
-        JobHandle handle = findJob.Schedule(SeekerPositions.Length, 100, sortJobHandle);
-        handle.Complete();
+            JobHandle handle = findJob.Schedule(SeekerPositions.Length, 100, sortJobHandle);
+            handle.Complete();
 
-        for(int i = 0; i < NearestTargetPositions.Length; ++i)
-        {
-            Debug.DrawLine(SeekerPositions[i], NearestTargetPositions[i]);
+            for (int i = 0; i < NearestTargetPositions.Length; ++i)
+            {
+                Debug.DrawLine(SeekerPositions[i], NearestTargetPositions[i]);
+            }
         }
     }
 }
