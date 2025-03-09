@@ -1,7 +1,10 @@
-﻿using Unity.Burst;
+﻿using System;
+using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEditor;
 [BurstCompile]
 public struct FindNearestJob : IJobParallelFor
 {
@@ -14,16 +17,55 @@ public struct FindNearestJob : IJobParallelFor
     public void Execute(int index)
     {
         float3 seekerPos = SeekerPosition[index];
-        float nearestDistSq = float.MaxValue;
-        for (int i = 0; i < TargetPosition.Length; ++i)
+
+        int startIdx = TargetPosition.BinarySearch(seekerPos, new AxisXComparer { });
+
+        if(startIdx < 0)
+        {
+            startIdx = ~startIdx;
+        }
+
+        if (startIdx >= TargetPosition.Length)
+        {
+            startIdx = TargetPosition.Length - 1;
+        }
+
+        float3 nearestTargetPos = TargetPosition[startIdx];
+        float nearestDistSq = math.distancesq(seekerPos, nearestTargetPos);
+
+        // index기준 위쪽으로
+        Search(seekerPos, startIdx + 1, TargetPosition.Length, +1,ref nearestTargetPos, ref nearestDistSq);
+        // 아래쪽으로 검색
+        Search(seekerPos, startIdx - 1, -1 , -1, ref nearestTargetPos, ref nearestDistSq);
+
+        NearestTargetPositions[index] = nearestTargetPos;
+    }
+
+    private void Search(float3 seekerPos, int startIdx, int endIdx, int step, ref float3 nearestTargetPos, ref float nearestDistSq)
+    {
+        for(int i = startIdx; i != endIdx; i += step)
         {
             float3 targetPos = TargetPosition[i];
-            float distSq = math.distancesq(seekerPos, targetPos);
-            if (distSq < nearestDistSq)
+            float xdiff = seekerPos.x - targetPos.x;
+            if(xdiff*xdiff > nearestDistSq)
+            {
+                break;
+            }
+
+            float distSq = math.distancesq(targetPos, seekerPos);
+
+            if(distSq < nearestDistSq)
             {
                 nearestDistSq = distSq;
-                NearestTargetPositions[index] = targetPos;
+                nearestTargetPos = targetPos;
             }
         }
+    }
+}
+public struct AxisXComparer : IComparer<float3>
+{
+    public int Compare(float3 x, float3 y)
+    {
+        return x.x.CompareTo(y.x);
     }
 }

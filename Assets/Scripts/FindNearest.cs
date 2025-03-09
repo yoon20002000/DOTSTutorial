@@ -36,6 +36,9 @@ public class FindNearest : MonoBehaviour
             SeekerPositions[i] = Spawner.SeekerTransform[i].localPosition;
         }
 
+        SortJob<float3, AxisXComparer> sortJob = TargetPositions.SortJob(new AxisXComparer { });
+        JobHandle sortJobHandle = sortJob.Schedule();
+
         FindNearestJob findJob = new FindNearestJob
         {
             TargetPosition = TargetPositions,
@@ -43,7 +46,7 @@ public class FindNearest : MonoBehaviour
             NearestTargetPositions = NearestTargetPositions
         };
 
-        JobHandle handle = findJob.Schedule(SeekerPositions.Length, 100);
+        JobHandle handle = findJob.Schedule(SeekerPositions.Length, 100, sortJobHandle);
         handle.Complete();
 
         for(int i = 0; i < NearestTargetPositions.Length; ++i)
