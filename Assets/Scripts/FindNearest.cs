@@ -43,7 +43,7 @@ public class FindNearest : MonoBehaviour
             NearestTargetPositions = NearestTargetPositions
         };
 
-        JobHandle handle = findJob.Schedule();
+        JobHandle handle = findJob.Schedule(SeekerPositions.Length, 100);
         handle.Complete();
 
         for(int i = 0; i < NearestTargetPositions.Length; ++i)
