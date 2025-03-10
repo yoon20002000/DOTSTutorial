@@ -39,6 +39,11 @@ namespace TankExample
             {
                 var tankEntity = systemState.EntityManager.Instantiate(config.TankPrefab);
 
+                if(i == 0)
+                {
+                    systemState.EntityManager.AddComponent<Player>(tankEntity);
+                }
+
                 var color = new URPMaterialPropertyBaseColor { Value =  RandomColor(ref random)};
 
                 // 프리팹에서 인스턴스화된 모든 루트 엔티티는 프리팹 계층 구조를 구성하는

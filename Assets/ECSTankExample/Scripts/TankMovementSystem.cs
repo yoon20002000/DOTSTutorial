@@ -12,7 +12,7 @@ public partial struct TankMovementSystem : ISystem
         var deltaTime = SystemAPI.Time.DeltaTime;
             
         // LocalTransform 과 Tank 컴포넌트가 있는 각 엔티티에서 LocalTransform 과 Tank에 Access
-        foreach(var (transform, entity) in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<Tank>().WithEntityAccess())
+        foreach(var (transform, entity) in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<Tank>().WithNone<Player>().WithEntityAccess())
         {
             float3 pos = transform.ValueRO.Position;
             // 3D 노이즈 함수를 샘플링하는 지점만 수정한다 함. 정확히는 무슨 뜻인지 확인 필요.
