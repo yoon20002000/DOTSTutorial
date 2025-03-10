@@ -26,5 +26,13 @@ public partial struct TankMovementSystem : ISystem
             transform.ValueRW.Position += dir * deltaTime * 5.0f;
             transform.ValueRW.Rotation = quaternion.RotateY(angle);
         }
+
+        var spin = quaternion.RotateY(SystemAPI.Time.DeltaTime * math.PI);
+        foreach(var tank in SystemAPI.Query<RefRW<Tank>>())
+        {
+            var trans = SystemAPI.GetComponentRW<LocalTransform>(tank.ValueRO.Turret);
+
+            trans.ValueRW.Rotation = math.mul(spin, trans.ValueRO.Rotation);
+        }
     }
 }

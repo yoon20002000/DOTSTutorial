@@ -60,7 +60,6 @@ namespace TankExample
                     {
                         // 탱크 구성하는 각 엔티티의 생상을 설정
                         systemState.EntityManager.SetComponentData(targetEntity.Value, color);
-                        Debug.Log($"X: {color.Value.x} Y: {color.Value.y} Z: {color.Value.z}");
                     }
                 }
             }

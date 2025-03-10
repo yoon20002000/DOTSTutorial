@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &103212346
+--- !u!1 &1176056045
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 103212348}
-  - component: {fileID: 103212347}
+  - component: {fileID: 1176056047}
+  - component: {fileID: 1176056046}
   m_Layer: 0
   m_Name: Config
   m_TagString: Untagged
@@ -136,28 +136,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &103212347
+--- !u!114 &1176056046
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 103212346}
+  m_GameObject: {fileID: 1176056045}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 975c8c88455fd304a94dd1dc063d38f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tankPrefab: {fileID: 2647893057128490876, guid: a7ccc6c78adb71a4091650c59706df24, type: 3}
-  cannonBallPrefab: {fileID: 0}
+  cannonBallPrefab: {fileID: 8844114073887253923, guid: 6028dc71618c628428194ca29a74503a, type: 3}
   tankCount: 10
---- !u!4 &103212348
+--- !u!4 &1176056047
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 103212346}
+  m_GameObject: {fileID: 1176056045}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -170,4 +170,4 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 103212348}
+  - {fileID: 1176056047}
